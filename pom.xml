@@ -30,6 +30,16 @@
         </license>
     </licenses>
     <repositories>
+        <!-- Maven Central first: maven.sing-group.org answers 200 with an HTML
+             page for artifacts it does not host, and Maven would store that page
+             as the POM (losing the transitive dependencies, e.g. of language-all) -->
+        <repository>
+            <id>central</id>
+            <url>https://repo.maven.apache.org/maven2</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
         <repository>
             <id>sing-third-party</id>
             <name>SING Maven Third Party</name>
@@ -111,6 +121,13 @@
             <groupId>com.mysql</groupId>
             <artifactId>mysql-connector-j</artifactId>
             <version>26.7.0</version>
+        </dependency>
+        <!-- MySQL Connector/J does not support MariaDB 11 (Docker deployment):
+             the driver is chosen by the URL (jdbc:mysql:// or jdbc:mariadb://) -->
+        <dependency>
+            <groupId>org.mariadb.jdbc</groupId>
+            <artifactId>mariadb-java-client</artifactId>
+            <version>3.5.11</version>
         </dependency>
 
         <dependency>

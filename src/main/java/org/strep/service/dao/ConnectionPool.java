@@ -44,8 +44,8 @@ public class ConnectionPool {
    static BasicDataSource ds = new BasicDataSource();
 
     static {
-        ds.setDriverClassName("com.mysql.cj.jdbc.Driver");
-
+        // No driver class: DriverManager picks it from the URL, jdbc:mysql://
+        // (MySQL Connector/J) or jdbc:mariadb:// (MariaDB Connector/J)
         try {
             ds.setUrl(Main.getProperty("url"));
             ds.setUsername(Main.getProperty("user"));
