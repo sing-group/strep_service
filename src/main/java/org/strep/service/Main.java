@@ -23,6 +23,8 @@ package org.strep.service;
 
 import java.util.ArrayList;
 import java.util.Properties;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.strep.service.dao.TaskCreateSdatasetDAO;
 import org.strep.service.dao.TaskCreateUPreprocessingDAO;
@@ -95,9 +97,37 @@ public class Main {
         String toRet = "";
 
         properties.load(Main.class.getClassLoader().getResourceAsStream("service.properties"));
-        toRet = properties.getProperty(key);
+        toRet = resolvePlaceholder(properties.getProperty(key));
 
         return toRet;
+    }
+
+    /**
+     * Pattern for values like ${NAME:default}
+     */
+    private static final Pattern PLACEHOLDER = Pattern.compile("^\\$\\{([^:}]+)(?::(.*))?\\}$");
+
+    /**
+     * Resolve a value like ${NAME:default} using the system property NAME, then
+     * the environment variable NAME and finally the default value
+     *
+     * @param value the value read from the properties file
+     * @return the resolved value
+     */
+    private static String resolvePlaceholder(String value) {
+        if (value == null) {
+            return null;
+        }
+        Matcher matcher = PLACEHOLDER.matcher(value.trim());
+        if (!matcher.matches()) {
+            return value;
+        }
+        String name = matcher.group(1);
+        String resolved = System.getProperty(name, System.getenv(name));
+        if (resolved != null) {
+            return resolved;
+        }
+        return matcher.group(2) != null ? matcher.group(2) : "";
     }
 
 }
